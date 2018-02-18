@@ -1,0 +1,11 @@
+version: '2'
+services:
+  jheuelify:
+    build: .
+    volumes:
+        - output:/output
+    env_file: jheuelify.env
+    restart: always
+
+volumes:
+  output:
