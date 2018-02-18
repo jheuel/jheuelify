@@ -101,7 +101,6 @@ RUN bzip2 -d shape_predictor_68_face_landmarks.dat.bz2
 # add faces and source
 ADD jheuelify jheuelify
 ADD faces faces
-ADD run.sh run.sh
 RUN chown -R ${username}:${username} .
 
 USER ${username}
