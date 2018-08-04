@@ -32,7 +32,7 @@ RUN apt-get install -qy --fix-missing \
             libpq-dev
 
 WORKDIR /tmp/opencv
-ENV OPENCV_VERSION="3.4.0"
+ENV OPENCV_VERSION="3.4.2"
 RUN wget https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip -q
 RUN unzip ${OPENCV_VERSION}.zip
 WORKDIR /tmp/opencv/opencv-${OPENCV_VERSION}/build
@@ -82,6 +82,14 @@ RUN make -j${NUM_CORES}
 RUN make install
 RUN rm -rf /tmp/tgbot-cpp
 
+WORKDIR /tmp
+RUN git clone https://github.com/google/googletest.git
+WORKDIR /tmp/googletest/build
+RUN cmake ..
+RUN make -j${NUM_CORES}
+RUN make install
+RUN rm -rf /tmp/googletest
+
 
 # create user without root privileges
 ARG username=physicist
@@ -99,8 +107,8 @@ RUN bzip2 -d shape_predictor_68_face_landmarks.dat.bz2
 
 
 # add faces and source
-ADD jheuelify jheuelify
 ADD faces faces
+ADD jheuelify jheuelify
 RUN chown -R ${username}:${username} .
 
 USER ${username}
@@ -110,6 +118,8 @@ RUN mkdir /home/${username}/build
 WORKDIR /home/${username}/build
 RUN cmake ../jheuelify
 RUN make -j${NUM_CORES}
+#RUN make test
+#RUN ./bin/swapper_test -V
 
 WORKDIR /home/${username}
 

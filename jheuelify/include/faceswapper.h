@@ -149,16 +149,100 @@ void FaceSwapper::swap(string dest_faces_path, string filename) {
     // mask_path = folder + "mask.png";
     // string destination_path = folder + "destination1.png";
 
-    Mat source = warped_im;
     // im2(roi).copyTo(source);
     // im.copyTo(destination);
     // Mat mask(warped_mask, roi);
 
     // Mat source = imread(source_path, IMREAD_COLOR);
     // Mat destination = imread(destination_path, IMREAD_COLOR);
-    imwrite(mask_path, warped_mask);
-    Mat mask = imread(mask_path, IMREAD_COLOR);
-    // Mat mask = warped_mask;
+    //imwrite(mask_path, warped_mask);
+    //Mat read_mask = imread(mask_path, CV_8U);
+    //Mat read_mask = imread(mask_path, IMREAD_COLOR);
+    //auto mask = warped_mask.clone();
+    //cv::Mat mask;
+    //cv::Mat in[] = { warped_mask, warped_mask, warped_mask };
+    //cv::merge(in, 3, mask);
+
+    //cv::Mat mask = cv::Mat(warped_mask);
+    //cv::Mat mask = cv::Mat::zeros(warped_mask.size(), CV_8U);
+    //cv::Mat mask = warped_mask.clone();
+    //cv::Mat mask = 0 * cv::Mat::ones(source.rows, source.cols, source.depth());
+    //cv::Mat mask = read_mask.clone();
+    //cv::Mat mask = cv::Mat::zeros(warped_mask.rows, warped_mask.cols, warped_mask.depth());
+    //cv::Mat mask = warped_mask;
+    //cv::Mat mask = cv::Mat::zeros(s, CV_8U);
+    {
+        // accept only char type matrices
+		CV_Assert(warped_mask.depth() == CV_8U);
+
+		int channels = warped_mask.channels();
+
+		int nRows = warped_mask.rows;
+		int nCols = warped_mask.cols * channels;
+
+		if (warped_mask.isContinuous())
+		{
+			nCols *= nRows;
+			nRows = 1;
+		}
+
+		int i, j;
+		uchar* p;
+		for(i = 0; i < nRows; ++i)
+		{
+			p = warped_mask.ptr<uchar>(i);
+			for (j = 0; j < nCols; ++j)
+			{
+				if (p[j]) {
+					p[j] = 255;
+				}
+			}
+		}
+    }
+
+    Mat source = warped_im;
+	Mat mask = warped_mask;
+    //{
+        //// accept only char type matrices
+        //CV_Assert(mask.depth() == CV_8U);
+
+        //const int channels = mask.channels();
+        //const int from_channels = read_mask.channels();
+        //CV_Assert(channels == from_channels);
+
+        //MatIterator_<uchar> it;
+        //MatIterator_<uchar> from_it;
+        //MatIterator_<uchar> from_end;
+        //MatIterator_<uchar> read_it;
+        //for(read_it = read_mask.begin<uchar>(), from_it = warped_mask.begin<uchar>(),
+                //it = mask.begin<uchar>(), from_end = warped_mask.end<uchar>();
+                //from_it != from_end; ++it, ++from_it, ++read_it) {
+            ////if (int(*from_it) > 230) {
+                ///[>it = uchar(230);
+            ////} else {
+            //*it = *from_it;
+            ///[>it = *read_it;
+            ////}
+            //if (*read_it != *from_it) {
+                //cout << int(*from_it) << "   " << int(*read_it) << endl;
+            //}
+        //}
+    //}
+
+
+    //cout << "read_mask" << endl;
+    //cout << "flags\t"  << read_mask.flags << endl;
+    //cout << "type\t"  << read_mask.type() << endl;
+    //cout << "rows\t"  << read_mask.rows << endl;
+    //cout << "cols\t"  << read_mask.cols << endl;
+    //cout << "dims\t"  << read_mask.dims << endl;
+
+    //cout << "mask" << endl;
+    //cout << "flags\t"  << mask.flags << endl;
+    //cout << "type\t"  << mask.type() << endl;
+    //cout << "rows\t"  << mask.rows << endl;
+    //cout << "cols\t"  << mask.cols << endl;
+    //cout << "dims\t"  << mask.dims << endl;
 
     // Mat result;
     Point p;
@@ -166,12 +250,19 @@ void FaceSwapper::swap(string dest_faces_path, string filename) {
     p.y = roi.y + int(roi.height / 2.);
     cout << "p: " << p << endl;
     // cout << "source size: " << source.size() << endl;
+    cout << "source size: " << source.size() << endl;
     cout << "dest size: " << destination.size() << endl;
+    cout << "mask size: " << mask.size() << endl;
+    cout << "mask type: " << mask.type() << endl;
 
-    // source.copyTo(destination(roi), mask);
-    // mask.copyTo(combined_mask(roi));
+     //source.copyTo(destination(roi), mask);
+     //mask.copyTo(combined_mask(roi));
 
-    seamlessClone(source, destination, mask, p, destination, NORMAL_CLONE);
+    Mat dest;
+
+    seamlessClone(source, destination, mask, p, dest, NORMAL_CLONE);
+    //seamlessClone(source, destination, mask, p, dest, NORMAL_CLONE);
+    destination = dest;
   }
 
   // std::vector<std::vector<Point>> contours;

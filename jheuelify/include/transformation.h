@@ -156,7 +156,7 @@ cv::Mat transformation(std::vector<cv::Point> shape1,
 
   cout << "A:" << endl << A << endl << endl;
 
-  return res;
+  return std::move(res);
 }
 
 cv::Mat warp(cv::Mat im, cv::Mat M, cv::Size s) {
@@ -164,12 +164,13 @@ cv::Mat warp(cv::Mat im, cv::Mat M, cv::Size s) {
   // cv::Mat output_im(im);
   cv::Mat output_im = cv::Mat::zeros(s, CV_8U);
   cout << "cv::warpAffine" << endl;
-  cv::warpAffine(im, output_im, M, s, cv::WARP_INVERSE_MAP,
-                 // cv::INTER_LINEAR,
+  cv::warpAffine(im, output_im, M, s,
+                 cv::WARP_INVERSE_MAP,
+                 //cv::INTER_LINEAR,
                  cv::BORDER_TRANSPARENT);
   cout << "cv::warpAffine end" << endl;
 
-  return output_im;
+  return std::move(output_im);
 }
 
 #endif /* ifndef __TRANSFORMATION_H__ */
